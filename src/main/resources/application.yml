@@ -1,5 +1,5 @@
 spring:
-  # 数据源配置  https://github.com/alibaba/druid/wiki/DruidDataSource%E9%85%8D%E7%BD%AE
+  # 数据源配置  官方文档：https://github.com/alibaba/druid/wiki/DruidDataSource%E9%85%8D%E7%BD%AE
   datasource:
     url: jdbc:mysql://localhost:3306/mmall_learning?characterEncoding=utf-8
     username: root
@@ -15,8 +15,8 @@ spring:
     multipart: #文件上传配置
       max-file-size: 1024MB
       max-request-size: 1024MB
-  thymeleaf: # 停用模板引擎缓存 方便debug
-    cache: false
+  thymeleaf:
+    cache: false # 停用模板引擎缓存 方便debug
  # messages: #国际化
  #   basename: i18n/...
 
@@ -25,9 +25,9 @@ spring:
 
 server:
   servlet:
-    context-path: / # 拦截路径
+    context-path: / # 上下文
   port: 8080 # 运行端口
 
 mybatis:
-  mapper-locations: classpath*:mappers/*.xml
-  type-aliases-package: com.crazykid.mmall.pojo
+  mapper-locations: classpath*:mappers/*.xml #xml的路径
+  type-aliases-package: com.crazykid.mmall.pojo #指定之后xml里的resulttype就可以省略前缀

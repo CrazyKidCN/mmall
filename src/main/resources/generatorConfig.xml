@@ -3,9 +3,10 @@
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
+<!-- myBatis 逆向工程插件的配置 -->
 <generatorConfiguration>
 
-    <!--指定特定数据库的jdbc驱动jar包的位置-->
+    <!-- 指定特定数据库的jdbc驱动jar包的位置 -->
     <classPathEntry location="C:\Users\69437\OneDrive\WebEnvironment\maven-repository\mysql\mysql-connector-java\8.0.13\mysql-connector-java-8.0.13.jar"/>
 
     <context id="default" targetRuntime="MyBatis3">
@@ -16,7 +17,7 @@
             <property name="suppressAllComments" value="true"/>
         </commentGenerator>
 
-        <!--jdbc的数据库连接 -->
+        <!-- jdbc的数据库连接 -->
         <jdbcConnection
                 driverClass="com.mysql.jdbc.Driver"
                 connectionURL="jdbc:mysql://localhost:3306/mmall_learning?characterEncoding=utf-8"
@@ -31,7 +32,8 @@
         </javaTypeResolver>
 
 
-        <!-- Model模型生成器,用来生成含有主键key的类，记录类 以及查询Example类
+        <!--
+            Model模型生成器,用来生成含有主键key的类，记录类 以及查询Example类
             targetPackage     指定生成的model生成所在的包名
             targetProject     指定在该项目下所在的路径
         -->
@@ -77,8 +79,5 @@
             <columnOverride column="sub_images" jdbcType="VARCHAR" />
         </table>
         <table tableName="mmall_user" domainObjectName="User" enableCountByExample="false" enableUpdateByExample="false" enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"/>
-
-
-        <!-- geelynote mybatis插件的搭建 -->
     </context>
 </generatorConfiguration>
