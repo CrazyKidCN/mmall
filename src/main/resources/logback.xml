@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SpringBoot Web Starter 默认已经引入了 logback 作为日志框架
+(1) 尝试在 classpath 下查找文件 logback-test.xml；
+(2) 如果文件不存在，则查找文件 logback.xml；
+(3) 如果两个文件都不存在，logback 用 Bas icConfigurator 自动对自己进行配置，这会导致记录输出到控制台。
+-->
+
+<!--
+scan: 当此属性设置为true时，配置文件如果发生改变，将会被重新加载，默认值为true
+scanPeriod: 设置监测配置文件是否有修改的时间间隔，如果没有给出时间单位，默认单位是毫秒。当scan为true时，此属性生效。默认的时间间隔为1分钟。
+debug: 当此属性设置为true时，将打印出logback内部日志信息，实时查看logback运行状态。默认值为false。
+-->
+<configuration scan="true" scanPeriod="60 seconds" debug="false">
+
+    <!-- contextName: 设置日志上下文名称，可以通过%contextName来打印日志上下文名称-->
+    <contextName>logback</contextName>
+
+    <!-- 设置变量 -->
+    <!-- 定义日志文件的存储地址 -->
+    <property name="LOG_HOME" value="D:/mmall" />
+
+    <!-- 引入properties文件 -->
+    <!--<property file="...." />-->
+
+    <!-- 控制台输出 -->
+    <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%m：日志消息，%n是换行符-->
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+        </encoder>
+        <!-- 过滤DEBUG以上级别 -->
+        <!--<filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+            <!--<level>DEBUG</level>-->
+        <!--</filter>-->
+    </appender>
+
+    <!-- 按照每天生成日志文件 -->
+    <appender name="mmall" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${LOG_HOME}/mmall-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%m：日志消息，%n是换行符-->
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+        </encoder>
+    </appender>
+
+
+    <appender name="error" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${LOG_HOME}/mmall-error-%d{yyyy-MM-dd}.gz</fileNamePattern>
+            <!--日志文件保留天数-->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%m：日志消息，%n是换行符-->
+            <pattern>[%d{HH:mm:ss.SSS}][%p][%c{40}][%t] %m%n</pattern>
+        </encoder>
+        <!-- 级别过滤器，当日志等级匹配上为ERROR时通过，否则拒绝 -->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+    </appender>
+
+
+    <!-- 指定最基础的日志输出级别 -->
+    <root level="INFO">
+        <appender-ref ref="console"/>
+        <appender-ref ref="error"/>
+    </root>
+
+
+    <!-- 设置指定包的日志级别 -->
+    <logger name="com.crazykid.mmall.dao" level="DEBUG"/>
+
+    <!-- additivity: 不让这个日志向上继承 -->
+    <logger name="com.crazykid.mmall" additivity="false" level="INFO" >
+        <appender-ref ref="mmall" />
+        <appender-ref ref="console"/>
+    </logger>
+
+
+
+</configuration>
