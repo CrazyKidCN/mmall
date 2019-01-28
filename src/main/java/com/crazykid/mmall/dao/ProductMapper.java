@@ -1,7 +1,9 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.Product;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ProductMapper {
     int deleteByPrimaryKey(Integer id);
 

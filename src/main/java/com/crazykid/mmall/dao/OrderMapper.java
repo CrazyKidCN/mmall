@@ -1,7 +1,9 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.Order;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface OrderMapper {
     int deleteByPrimaryKey(Integer id);
 

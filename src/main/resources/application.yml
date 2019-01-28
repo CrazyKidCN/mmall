@@ -29,5 +29,5 @@ server:
   port: 8080 # 运行端口
 
 mybatis:
-  mapper-locations: classpath:resource/mappers/*.xml
+  mapper-locations: classpath*:mappers/*.xml
   type-aliases-package: com.crazykid.mmall.pojo

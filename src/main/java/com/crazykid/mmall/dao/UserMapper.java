@@ -1,7 +1,9 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.User;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface UserMapper {
     int deleteByPrimaryKey(Integer id);
 

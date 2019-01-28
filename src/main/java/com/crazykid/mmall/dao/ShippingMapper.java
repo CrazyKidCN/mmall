@@ -1,7 +1,9 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.Shipping;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface ShippingMapper {
     int deleteByPrimaryKey(Integer id);
 

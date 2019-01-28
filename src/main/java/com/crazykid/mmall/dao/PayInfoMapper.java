@@ -1,7 +1,9 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.PayInfo;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface PayInfoMapper {
     int deleteByPrimaryKey(Integer id);
 

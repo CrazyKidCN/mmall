@@ -1,7 +1,9 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.Cart;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CartMapper {
     int deleteByPrimaryKey(Integer id);
 

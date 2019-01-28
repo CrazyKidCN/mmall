@@ -1,7 +1,9 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.Category;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public interface CategoryMapper {
     int deleteByPrimaryKey(Integer id);
 
