@@ -1,6 +1,7 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.User;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -16,4 +17,8 @@ public interface UserMapper {
     int updateByPrimaryKeySelective(User record);
 
     int updateByPrimaryKey(User record);
+
+    int checkUsername(String username);
+
+    User selectLogin(@Param("username") String username, @Param("password") String password);
 }
