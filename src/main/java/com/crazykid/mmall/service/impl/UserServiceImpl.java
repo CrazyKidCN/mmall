@@ -2,6 +2,7 @@ package com.crazykid.mmall.service.impl;
 
 import com.crazykid.mmall.common.Const;
 import com.crazykid.mmall.common.ServerResponse;
+import com.crazykid.mmall.common.TokenCache;
 import com.crazykid.mmall.dao.UserMapper;
 import com.crazykid.mmall.pojo.User;
 import com.crazykid.mmall.service.IUserService;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.UUID;
 
 @Service("iUserService")
 public class UserServiceImpl implements IUserService {
@@ -88,5 +91,35 @@ public class UserServiceImpl implements IUserService {
         } else {
             return ServerResponse.createByErrorMessage("缺少参数 type");
         }
+    }
+
+    @Override
+    public ServerResponse selectQuestion(String username) {
+        ServerResponse validResponse = this.checkValid(username, Const.USERNAME);
+        if (validResponse.isSuccess()) {
+            //用户不存在
+            return ServerResponse.createByErrorMessage("用户不存在");
+        }
+        String question = userMapper.selectQuestionByUsername(username);
+
+        if (!StringUtils.isEmpty(question)) {
+            return ServerResponse.createBySuccess(question);
+        }
+
+        return ServerResponse.createByErrorMessage("找回密码的问题为空");
+    }
+
+    @Override
+    public ServerResponse<String> checkAnswer(String username, String question, String answer) {
+        int resultCount = userMapper.checkAnswer(username, question, answer);
+        if (resultCount > 0) {
+            //有返回结果说明问题和答案是这个用户的 而且是正确的
+            //生成一个随机token
+            String forgetToken = UUID.randomUUID().toString();
+            //放进缓存
+            TokenCache.setKey("token_"+username, forgetToken);
+            return ServerResponse.createBySuccess(forgetToken);
+        }
+        return ServerResponse.createByErrorMessage("问题答案错误");
     }
 }

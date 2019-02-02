@@ -78,6 +78,15 @@
             <version>1.2.56</version>
         </dependency>
 
+        <!-- 用作缓存token -->
+        <!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>27.0-jre</version>
+        </dependency>
+
+
 
     </dependencies>
 
