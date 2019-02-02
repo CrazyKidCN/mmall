@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class TokenCache {
 
+    public static final String TOKEN_PREFIX = "token_";
+
     private static LoadingCache<String,String> localCache = CacheBuilder.newBuilder()
             .initialCapacity(1000) //缓存初始化容量大小
             .maximumSize(10000) //缓存的最大容量 当超过这个容量的时候 guava会使用LRU算法(最少使用算法)来移除缓存项

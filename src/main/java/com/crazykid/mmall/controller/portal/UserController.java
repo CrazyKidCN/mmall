@@ -1,9 +1,11 @@
 package com.crazykid.mmall.controller.portal;
 
 import com.crazykid.mmall.common.Const;
+import com.crazykid.mmall.common.ResponseCode;
 import com.crazykid.mmall.common.ServerResponse;
 import com.crazykid.mmall.pojo.User;
 import com.crazykid.mmall.service.IUserService;
+import com.mysql.fabric.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -97,18 +99,90 @@ public class UserController {
      * @param username 用户名
      * @return 响应内容
      */
+    @GetMapping(value = "forget_get_question.do")
+    @ResponseBody
     public ServerResponse<String> forgetGetQuestion(String username) {
         return iUserService.selectQuestion(username);
     }
 
     /**
-     *  检查问题答案
+     * 检查问题答案
      * @param username 用户名
      * @param question 密码
      * @param answer 答案
      * @return 响应内容
      */
+    @GetMapping(value = "forget_check_answer.do")
+    @ResponseBody
     public ServerResponse<String> forgetCheckAnswer(String username, String question, String answer) {
         return iUserService.checkAnswer(username, question, answer);
+    }
+
+    /**
+     * 重置密码
+     * @param username 用户名
+     * @param passwordNew 新密码
+     * @param forgetToken 检查问题答案成功之后生成的token
+     * @return 响应内容
+     */
+    @PostMapping(value = "forget_reset_password.do")
+    @ResponseBody
+    public ServerResponse<String> forgetResetPassword(String username, String passwordNew, String forgetToken) {
+        return iUserService.forgetResetPassword(username, passwordNew, forgetToken);
+    }
+
+    /**
+     * 登录状态下的重置密码
+     * @param session session 用于读出已登录的user对象
+     * @param passwordOld 旧密码
+     * @param passwordNew 新密码
+     * @return 响应内容
+     */
+    @PostMapping(value = "reset_password.do")
+    @ResponseBody
+    public ServerResponse<String> resetPassword(HttpSession session, String passwordOld, String passwordNew) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByErrorMessage("用户未登录");
+        }
+        return iUserService.resetPassword(user, passwordOld, passwordNew);
+    }
+
+    /**
+     * 更新用户信息
+     * @param session session 用于判断用户是否登录 并且防止横向越权
+     * @param user 前台传来的表单信息
+     * @return 响应内容
+     */
+    @PostMapping(value = "update_information.do")
+    @ResponseBody
+    public ServerResponse<User> update_information(HttpSession session, User user) {
+        User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
+        if (currentUser == null) {
+            return ServerResponse.createByErrorMessage("用户未登录");
+        }
+        //为了防止横向越权，这个user的id和username从已登录用户的session中拿，避免篡改
+        user.setId(currentUser.getId());
+        user.setUsername(currentUser.getUsername());
+        ServerResponse<User> response = iUserService.updateInformation(user);
+        if (response.isSuccess()) {
+            session.setAttribute(Const.CURRENT_USER, response.getData());
+        }
+        return response;
+    }
+
+    /**
+     * 获取用户信息
+     * @param session session
+     * @return 响应内容
+     */
+    @GetMapping(value = "get_information.do")
+    @ResponseBody
+    public ServerResponse<User> get_information(HttpSession session) {
+       User currentUser = (User)session.getAttribute(Const.CURRENT_USER);
+       if (currentUser == null) {
+           return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "未登录,需要强制登录");
+       }
+       return iUserService.getInformation(currentUser.getId());
     }
 }
