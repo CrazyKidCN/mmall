@@ -112,7 +112,7 @@ public class UserController {
      * @param answer 答案
      * @return 响应内容
      */
-    @GetMapping(value = "forget_check_answer.do")
+    @PostMapping(value = "forget_check_answer.do")
     @ResponseBody
     public ServerResponse<String> forgetCheckAnswer(String username, String question, String answer) {
         return iUserService.checkAnswer(username, question, answer);
