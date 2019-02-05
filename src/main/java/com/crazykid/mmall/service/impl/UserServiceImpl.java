@@ -160,7 +160,7 @@ public class UserServiceImpl implements IUserService {
     @Override
     public ServerResponse<String> resetPassword(User user, String passwordOld, String passwordNew) {
         //防止横向越权，要校验一下这个用户的旧密码，一定要指定是这个用户，因为我们会查询一个count(1)，如果不指定id，那么结果就是true count>0
-        int resultCount = userMapper.checkPassword(DigestUtils.md5DigestAsHex(passwordOld.getBytes()), user.getId());
+        int resultCount = userMapper.checkPassword(MD5Util.Encode(passwordOld), user.getId());
         if (resultCount == 0) {
             return ServerResponse.createByErrorMessage("旧密码错误");
         }
@@ -185,7 +185,7 @@ public class UserServiceImpl implements IUserService {
 
         //设置需要更新的字段 【username/role是不能被更新的】
         User updateUser = new User();
-        updateUser.setId(user.getId());
+        updateUser.setId(user.getId()); //主键
         updateUser.setEmail(user.getEmail());
         updateUser.setPhone(user.getPhone());
         updateUser.setQuestion(user.getQuestion());
@@ -195,7 +195,7 @@ public class UserServiceImpl implements IUserService {
         //updateByPrimaryKeySelective: 传入的对象哪些属性不为null才设置哪些字段
         int updateCount = userMapper.updateByPrimaryKeySelective(updateUser);
         if(updateCount > 0) {
-            return ServerResponse.createBySuccess("更新个人信息成功", updateUser);
+            return ServerResponse.createBySuccess("更新个人信息成功", user);
         }
         return ServerResponse.createByErrorMessage("更新个人信息失败");
     }

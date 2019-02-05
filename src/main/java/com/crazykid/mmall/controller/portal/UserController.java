@@ -161,9 +161,12 @@ public class UserController {
         if (currentUser == null) {
             return ServerResponse.createByErrorMessage("用户未登录");
         }
+
         //为了防止横向越权，这个user的id和username从已登录用户的session中拿，避免篡改
         user.setId(currentUser.getId());
         user.setUsername(currentUser.getUsername());
+        user.setRole(currentUser.getRole());
+
         ServerResponse<User> response = iUserService.updateInformation(user);
         if (response.isSuccess()) {
             session.setAttribute(Const.CURRENT_USER, response.getData());
