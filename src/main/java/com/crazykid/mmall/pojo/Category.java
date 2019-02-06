@@ -10,6 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode(of = "id") //只根据id属性
 public class Category {
     private Integer id;
     private Integer parentId;

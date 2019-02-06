@@ -7,6 +7,7 @@ import com.crazykid.mmall.dao.UserMapper;
 import com.crazykid.mmall.pojo.User;
 import com.crazykid.mmall.service.IUserService;
 import com.crazykid.mmall.util.MD5Util;
+import com.mysql.fabric.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
@@ -208,5 +209,14 @@ public class UserServiceImpl implements IUserService {
         }
         user.setPassword(null);
         return ServerResponse.createBySuccess(user);
+    }
+
+    //admin
+    @Override
+    public ServerResponse checkAdminRole(User user) {
+        if (user!=null && user.getRole().intValue()==Const.Role.ROLE_ADMIN) {
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
     }
 }
