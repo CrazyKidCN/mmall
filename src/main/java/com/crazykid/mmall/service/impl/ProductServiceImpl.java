@@ -10,12 +10,19 @@ import com.crazykid.mmall.service.IProductService;
 import com.crazykid.mmall.util.DateTimeUtil;
 import com.crazykid.mmall.util.PropertiesUtil;
 import com.crazykid.mmall.vo.ProductDetailVo;
+import com.crazykid.mmall.vo.ProductListVo;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Lists;
 import com.mysql.fabric.Server;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service("iProductService")
 public class ProductServiceImpl implements IProductService {
@@ -106,4 +113,31 @@ public class ProductServiceImpl implements IProductService {
         return productDetailVo;
     }
 
+
+    public ServerResponse<PageInfo> getProductList(int pageNum,int pageSize) {
+        PageHelper.startPage(pageNum, pageSize);
+        List<Product> productList = productMapper.selectList();
+
+        List<ProductListVo> productListVoList = new ArrayList<>();
+        for (Product productItem : productList) {
+            ProductListVo productListVo = assembleProductListVo(productItem);
+        }
+        PageInfo pageResult = new PageInfo(productList);
+        pageResult.setList(productListVoList);//把查出来的结果 放进分页集合中
+        return ServerResponse.createBySuccess(pageResult);
+    }
+
+    //装配vo方法
+    private ProductListVo assembleProductListVo(Product product) {
+        ProductListVo productListVo = new ProductListVo();
+        productListVo.setId(product.getId());
+        productListVo.setName(product.getName());
+        productListVo.setCategoryId(product.getCategoryId());
+        productListVo.setImageHost(PropertiesUtil.getProperties("ftp.server.http.prefix", "http://localhost/"));
+        productListVo.setMainImage(product.getMainImage());
+        productListVo.setPrice(product.getPrice());
+        productListVo.setSubtitle(product.getSubtitle());
+        productListVo.setStatus(product.getStatus());
+        return productListVo;
+    }
 }
