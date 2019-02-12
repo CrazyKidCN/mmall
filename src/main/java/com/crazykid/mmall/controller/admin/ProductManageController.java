@@ -7,6 +7,7 @@ import com.crazykid.mmall.pojo.Product;
 import com.crazykid.mmall.pojo.User;
 import com.crazykid.mmall.service.IProductService;
 import com.crazykid.mmall.service.IUserService;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -84,6 +85,22 @@ public class ProductManageController {
         if (iUserService.checkAdminRole(user).isSuccess()) {
             //实现逻辑...
             return iProductService.getProductList(pageNum, pageSize);
+        }
+        return ServerResponse.createByErrorMessage("无权限");
+    }
+
+    @RequestMapping("search.do")
+    @ResponseBody
+    public ServerResponse productSearch(HttpSession session, String productName, Integer productId, @RequestParam(defaultValue = "1") int pageNum, @RequestParam(defaultValue = "10") int pageSize) {
+        //判断用户是否已登录
+        User user = (User)session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.NEED_LOGIN.getCode(), "用户未登录，请登录管理员");
+        }
+        //判断用户是否是管理员
+        if (iUserService.checkAdminRole(user).isSuccess()) {
+            //实现逻辑...
+            return iProductService.searchProduct(productName, productId, pageNum, pageSize);
         }
         return ServerResponse.createByErrorMessage("无权限");
     }

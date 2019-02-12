@@ -20,4 +20,6 @@ public interface ProductMapper {
     int updateByPrimaryKey(Product record);
 
     List<Product> selectList();
+
+    List<Product> selectByNameAndProductId(String productName, Integer productId);
 }
