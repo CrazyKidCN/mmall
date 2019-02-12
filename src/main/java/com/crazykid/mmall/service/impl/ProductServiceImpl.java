@@ -118,7 +118,7 @@ public class ProductServiceImpl implements IProductService {
         PageHelper.startPage(pageNum, pageSize);
         List<Product> productList = productMapper.selectList();
 
-        List<ProductListVo> productListVoList = new ArrayList<>();
+        List<ProductListVo> productListVoList = Lists.newArrayList();//guava工具
         for (Product productItem : productList) {
             ProductListVo productListVo = assembleProductListVo(productItem);
         }
