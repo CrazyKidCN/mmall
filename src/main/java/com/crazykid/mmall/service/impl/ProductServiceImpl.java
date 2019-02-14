@@ -1,16 +1,19 @@
 package com.crazykid.mmall.service.impl;
 
+import com.crazykid.mmall.common.Const;
 import com.crazykid.mmall.common.ResponseCode;
 import com.crazykid.mmall.common.ServerResponse;
 import com.crazykid.mmall.dao.CategoryMapper;
 import com.crazykid.mmall.dao.ProductMapper;
 import com.crazykid.mmall.pojo.Category;
 import com.crazykid.mmall.pojo.Product;
+import com.crazykid.mmall.service.ICategoryService;
 import com.crazykid.mmall.service.IProductService;
 import com.crazykid.mmall.util.DateTimeUtil;
 import com.crazykid.mmall.util.PropertiesUtil;
 import com.crazykid.mmall.vo.ProductDetailVo;
 import com.crazykid.mmall.vo.ProductListVo;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
@@ -32,6 +35,9 @@ public class ProductServiceImpl implements IProductService {
 
     @Autowired
     private CategoryMapper categoryMapper;
+
+    @Autowired
+    private ICategoryService iCategoryService;
 
     public ServerResponse saveOrUpdateProduct(Product product) {
         if (product != null) {
@@ -157,4 +163,65 @@ public class ProductServiceImpl implements IProductService {
         return ServerResponse.createBySuccess(pageResult);
     }
 
+    public ServerResponse<ProductDetailVo> getProductDetail(Integer productId) {
+        if (productId == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(), ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+        Product product = productMapper.selectByPrimaryKey(productId);
+        if (product == null) {
+            return ServerResponse.createByErrorMessage("产品已下架或者删除");
+        }
+        if (product.getStatus() != Const.ProductStatusEnum.ON_SALE.getCode()) {
+            return ServerResponse.createByErrorMessage("产品已下架或者删除");
+        }
+        ProductDetailVo productDetailVo = assembleProductDetailVo(product);
+        return ServerResponse.createBySuccess(productDetailVo);
+    }
+
+    public ServerResponse<PageInfo> getProductByKeywordCategory(String keyword, Integer categoryId, int pageNum, int pageSize, String orderBy) {
+        if (StringUtils.isEmpty(keyword) && categoryId == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(), "缺少参数");
+        }
+        //如果传入分类ID，则查出其和其子ID
+        List<Integer> categoryIdList = new ArrayList<>();
+        if (categoryId != null) {
+            Category category = categoryMapper.selectByPrimaryKey(categoryId);
+            if (category == null && StringUtils.isEmpty(keyword)) {
+                //说明没有查询结果 但是我们不报错 返回一个空结果集
+                PageHelper.startPage(pageNum, pageSize);
+                List<ProductListVo> productListVoList = Lists.newArrayList();
+                PageInfo pageInfo = new PageInfo(productListVoList);
+                return ServerResponse.createBySuccess(pageInfo);
+            }
+            categoryIdList = iCategoryService.selectCategoryAndChildrenById(category.getId()).getData();
+        }
+        //如果传入关键字，拼接
+        if (!StringUtils.isEmpty("keyword")) {
+            keyword = new StringBuilder().append("%").append(keyword).append("%").toString();
+        }
+
+        PageHelper.startPage(pageNum, pageSize);
+
+        //排序处理
+        if (!StringUtils.isEmpty(orderBy)) {
+            if (Const.ProductListOrderBy.PRICE_ASC_DESC.contains(orderBy)) {
+                String[] orderbyArray = orderBy.split("_");
+                PageHelper.orderBy(orderbyArray[0] + " " +orderbyArray[1]);
+            }
+        }
+        //查询 没传入条件则null
+        List<Product> productList = productMapper.selectByNameAndCategoryIds(StringUtils.isEmpty(keyword) ? null : keyword, categoryIdList.size() == 0 ? null : categoryIdList);
+
+        //装配vo
+        List<ProductListVo> productListVoList = Lists.newArrayList();
+        for (Product product : productList) {
+            ProductListVo productListVo = assembleProductListVo(product);
+            productListVoList.add(productListVo);
+        }
+
+        PageInfo pageInfo = new PageInfo(productList);
+        pageInfo.setList(productListVoList);
+
+        return ServerResponse.createBySuccess(pageInfo);
+    }
 }
