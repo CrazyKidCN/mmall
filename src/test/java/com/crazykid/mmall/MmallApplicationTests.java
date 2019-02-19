@@ -8,10 +8,11 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class MmallApplicationTests {
-
     @Test
-    public void contextLoads() {
+    public void test() {
+        for (int i=1; i<10; i++) {
+            int a = 0;
+            System.out.println(a);
+        }
     }
-
 }
-

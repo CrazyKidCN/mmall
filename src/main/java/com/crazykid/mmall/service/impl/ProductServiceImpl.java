@@ -127,6 +127,7 @@ public class ProductServiceImpl implements IProductService {
         List<ProductListVo> productListVoList = Lists.newArrayList();//guava工具
         for (Product productItem : productList) {
             ProductListVo productListVo = assembleProductListVo(productItem);
+            productListVoList.add(productListVo);
         }
         PageInfo pageResult = new PageInfo(productList);
         pageResult.setList(productListVoList);//把查出来的结果 放进分页集合中
@@ -157,6 +158,7 @@ public class ProductServiceImpl implements IProductService {
         List<ProductListVo> productListVoList = new ArrayList<>();
         for (Product productItem : productList) {
             ProductListVo productListVo = assembleProductListVo(productItem);
+            productListVoList.add(productListVo);
         }
         PageInfo pageResult = new PageInfo(productList);
         pageResult.setList(productListVoList);//把查出来的结果 放进分页集合中
@@ -211,7 +213,6 @@ public class ProductServiceImpl implements IProductService {
         }
         //查询 没传入条件则null
         List<Product> productList = productMapper.selectByNameAndCategoryIds(StringUtils.isEmpty(keyword) ? null : keyword, categoryIdList.size() == 0 ? null : categoryIdList);
-
         //装配vo
         List<ProductListVo> productListVoList = Lists.newArrayList();
         for (Product product : productList) {

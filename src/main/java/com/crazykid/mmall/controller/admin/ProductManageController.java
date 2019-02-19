@@ -9,7 +9,6 @@ import com.crazykid.mmall.service.IFileService;
 import com.crazykid.mmall.service.IProductService;
 import com.crazykid.mmall.service.IUserService;
 import com.crazykid.mmall.util.PropertiesUtil;
-import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Maps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

@@ -18,7 +18,7 @@ debug: 当此属性设置为true时，将打印出logback内部日志信息，�
 
     <!-- 设置变量 -->
     <!-- 定义日志文件的存储地址 -->
-    <property name="LOG_HOME" value="D:/mmall" />
+    <property name="LOG_HOME" value="C:/Users\hasee/OneDrive/JavaProject/mmall/log" />
 
     <!-- 引入properties文件 -->
     <!--<property file="...." />-->
