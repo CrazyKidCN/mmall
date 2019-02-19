@@ -12,6 +12,7 @@ import com.crazykid.mmall.util.BigDecimalUtil;
 import com.crazykid.mmall.util.PropertiesUtil;
 import com.crazykid.mmall.vo.CartProductVo;
 import com.crazykid.mmall.vo.CartVo;
+import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
@@ -55,7 +56,35 @@ public class CartServiceImpl implements ICartService {
         return ServerResponse.createBySuccess(cartVo);
     }
 
-    //
+    @Override
+    public ServerResponse<CartVo> update(Integer userId, Integer productId, Integer count) {
+        //空参数判断
+        if (productId == null || count == null) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(), ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+        Cart cart = cartMapper.selectCartByUserIdProductId(userId, productId);
+        if (cart != null) {
+            cart.setQuantity(count);
+        }
+        cartMapper.updateByPrimaryKeySelective(cart);
+        CartVo cartVo = this.assmbleCartVo(userId);
+        return ServerResponse.createBySuccess(cartVo);
+    }
+
+    @Override
+    public ServerResponse<CartVo> deleteProducts(Integer userId, String productIds) {
+        //guava的split工具：使用给定的字符串分割，然后将结果添加到list
+        List<String> productList = Splitter.on(",").splitToList(productIds);
+        if(CollectionUtils.isEmpty(productList)) {
+            return ServerResponse.createByErrorCodeMessage(ResponseCode.ILLEGAL_ARGUMENT.getCode(), ResponseCode.ILLEGAL_ARGUMENT.getDesc());
+        }
+        cartMapper.deleteByUserIdProductIds(userId, productList);
+        CartVo cartVo = this.assmbleCartVo(userId);
+        return ServerResponse.createBySuccess(cartVo);
+    }
+
+    //装配CartVo的方法，里面进行了总价的判断、全选的判断、购物车某商品数量是否超出该商品库存的判断。
+    //购物车的方法最后都执行了这个方法，确保数据的正确。
     private CartVo assmbleCartVo(Integer userId) {
         CartVo cartVo = new CartVo();
         List<Cart> cartList = cartMapper.selectCartByUserId(userId); //获取该用户的购物车
