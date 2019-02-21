@@ -1,6 +1,7 @@
 package com.crazykid.mmall.dao;
 
 import com.crazykid.mmall.pojo.Product;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,7 +22,7 @@ public interface ProductMapper {
 
     List<Product> selectList();
 
-    List<Product> selectByNameAndProductId(String productName, Integer productId);
+    List<Product> selectByNameAndProductId(@Param("productName") String productName, @Param("productId") Integer productId);
 
-    List<Product> selectByNameAndCategoryIds(String productName, List<Integer> categoryIdList);
+    List<Product> selectByNameAndCategoryIds(@Param("productName") String productName, @Param("categoryIdList") List<Integer> categoryIdList);
 }

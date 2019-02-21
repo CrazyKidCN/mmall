@@ -15,11 +15,13 @@ import com.crazykid.mmall.vo.CartVo;
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
 
+@Service("iCartService")
 public class CartServiceImpl implements ICartService {
     @Autowired
     CartMapper cartMapper;
@@ -164,6 +166,7 @@ public class CartServiceImpl implements ICartService {
 
     //是否全选状态
     private boolean getAllCheckedStatus(Integer userId) {
+
         if (userId == null) {
             return false;
         }
