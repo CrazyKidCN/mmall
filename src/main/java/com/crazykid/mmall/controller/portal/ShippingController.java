@@ -27,7 +27,7 @@ public class ShippingController {
      * @param shipping
      * @return
      */
-    @RequestMapping("add.do")
+    @RequestMapping("add.do") //TODO 加空判断
     @ResponseBody
     public ServerResponse add(HttpSession session, Shipping shipping) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
@@ -59,7 +59,7 @@ public class ShippingController {
      * @param shipping
      * @return
      */
-    @RequestMapping("update.do")
+    @RequestMapping("update.do") //TODO 加空判断
     @ResponseBody
     public ServerResponse update(HttpSession session, Shipping shipping) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
@@ -75,7 +75,7 @@ public class ShippingController {
      * @param shippingId
      * @return
      */
-    @RequestMapping("select.do")
+    @RequestMapping("select.do") //TODO bug需修复
     @ResponseBody
     public ServerResponse select(HttpSession session, Integer shippingId) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);
