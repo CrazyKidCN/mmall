@@ -10,13 +10,17 @@ import com.alipay.demo.trade.model.result.AlipayF2FPrecreateResult;
 import com.alipay.demo.trade.service.AlipayTradeService;
 import com.alipay.demo.trade.service.impl.AlipayTradeServiceImpl;
 import com.alipay.demo.trade.utils.ZxingUtils;
+import com.crazykid.mmall.common.Const;
 import com.crazykid.mmall.common.ServerResponse;
 import com.crazykid.mmall.dao.OrderItemMapper;
 import com.crazykid.mmall.dao.OrderMapper;
+import com.crazykid.mmall.dao.PayInfoMapper;
 import com.crazykid.mmall.pojo.Order;
 import com.crazykid.mmall.pojo.OrderItem;
+import com.crazykid.mmall.pojo.PayInfo;
 import com.crazykid.mmall.service.IOrderService;
 import com.crazykid.mmall.util.BigDecimalUtil;
+import com.crazykid.mmall.util.DateTimeUtil;
 import com.crazykid.mmall.util.FTPUtil;
 import com.crazykid.mmall.util.PropertiesUtil;
 import com.google.common.collect.Lists;
@@ -39,6 +43,8 @@ public class OrderServiceImpl implements IOrderService {
     OrderMapper orderMapper;
     @Autowired
     OrderItemMapper orderItemMapper;
+    @Autowired
+    PayInfoMapper payInfoMapper;
 
     @Override
     public ServerResponse pay(Long orderNo, Integer userId, String path) {
@@ -175,5 +181,62 @@ public class OrderServiceImpl implements IOrderService {
             }
             log.info("body:" + response.getBody());
         }
+    }
+
+    public ServerResponse alipayCallback(Map<String,String> params) {
+        Long outTradeNo = Long.parseLong(params.get("out_trade_no"));
+        String tradeNo = params.get("trade_no");
+        String tradeStatus = params.get("trade_status");
+
+        /**
+         第五步：需要严格按照如下描述校验通知数据的正确性。
+         商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
+         并判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
+         同时需要校验通知中的seller_id（或者seller_email) 是否为out_trade_no这笔单据的对应的操作方
+         （有的时候，一个商户可能有多个seller_id/seller_email），上述有任何一个验证不通过，
+         则表明本次通知是异常通知，务必忽略。在上述验证通过后商户必须根据支付宝不同类型的业务通知，
+         正确的进行不同的业务处理，并且过滤重复的通知结果数据。在支付宝的业务通知中，
+         只有交易通知状态为TRADE_SUCCESS或TRADE_FINISHED时，支付宝才会认定为买家付款成功。
+         */
+
+        //验证该通知数据中的out_trade_no是否为商户系统中创建的订单号
+        Order order = orderMapper.selectByOrderNo(outTradeNo);
+        if (order == null) {
+            return ServerResponse.createByErrorMessage("非本商城订单");
+        }
+
+        //过滤重复的通知结果数据
+        if (order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()) {
+            return ServerResponse.createBySuccess("支付宝重复调用");
+        }
+
+        //如果交易成功，就把订单状态设置成已付款
+        if (Const.AlipayCallBack.RESPONSE_SUCCESS.equals(tradeStatus)) {
+            order.setPaymentTime(DateTimeUtil.strToDate(params.get("gmt_payment")));
+            order.setStatus(Const.OrderStatusEnum.PAID.getCode());
+            orderMapper.updateByPrimaryKeySelective(order);
+        }
+
+        PayInfo payInfo = new PayInfo();
+        payInfo.setUserId(order.getUserId());
+        payInfo.setOrderNo(order.getOrderNo());
+        payInfo.setPayPlatform(Const.PayPlantformEnum.ALIPAY.getCode());
+        payInfo.setPlatformNumber(tradeNo);
+        payInfo.setPlatformStatus(tradeStatus);
+
+        payInfoMapper.insert(payInfo);
+
+        return ServerResponse.createBySuccess();
+    }
+
+    public ServerResponse queryOrderPayStatus(Integer userId, Long orderNo) {
+        Order order = orderMapper.selectByOrderNo(orderNo);
+        if (order == null) {
+            return ServerResponse.createByErrorMessage("用户没有该订单");
+        }
+        if (order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()) {
+            return ServerResponse.createBySuccess();
+        }
+        return ServerResponse.createByError();
     }
 }
