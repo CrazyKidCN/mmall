@@ -1,8 +1,12 @@
 package com.crazykid.mmall.dao;
 
+import com.crazykid.mmall.common.ServerResponse;
 import com.crazykid.mmall.pojo.Order;
+import com.github.pagehelper.PageInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 public interface OrderMapper {
@@ -21,4 +25,8 @@ public interface OrderMapper {
     Order selectByUserIdAndOrderNo(@Param("userId")Integer userId, @Param("orderNo")Long orderNo);
 
     Order selectByOrderNo(Long orderNo);
+
+    List<Order> selectByUserId(Integer userId);
+
+    List<Order> selectAll();
 }
