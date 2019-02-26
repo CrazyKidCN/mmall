@@ -55,6 +55,15 @@ public class Const {
 
         private int code;
         private String value;
+
+        public static OrderStatusEnum codeOf(int code) {
+            for (OrderStatusEnum orderStatusEnum : values()) {
+                if (orderStatusEnum.getCode() == code) {
+                    return orderStatusEnum;
+                }
+            }
+            throw new RuntimeException("没有找到对应的枚举");
+        }
     }
 
     //支付宝回调 通知触发条件
@@ -77,5 +86,24 @@ public class Const {
 
         private int code;
         private String value;
+    }
+
+    //支付方式
+    @Getter
+    @AllArgsConstructor
+    public enum PaymentTypeEnum {
+        ONLINE_PAY(1,"在线支付");
+
+        private int code;
+        private String value;
+
+        public static PaymentTypeEnum codeOf(int code) {
+            for (PaymentTypeEnum paymentTypeEnum : values()) {
+                if (paymentTypeEnum.getCode() == code) {
+                    return paymentTypeEnum;
+                }
+            }
+            throw new RuntimeException("没有找到对应的枚举");
+        }
     }
 }
