@@ -9,6 +9,8 @@ import com.crazykid.mmall.service.IShippingService;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -75,7 +77,7 @@ public class ShippingController {
      * @param shippingId
      * @return
      */
-    @RequestMapping("select.do") //TODO bug需修复
+    @RequestMapping("select.do")
     @ResponseBody
     public ServerResponse select(HttpSession session, Integer shippingId) {
         User user = (User) session.getAttribute(Const.CURRENT_USER);

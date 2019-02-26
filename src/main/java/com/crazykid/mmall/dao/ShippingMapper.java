@@ -24,7 +24,7 @@ public interface ShippingMapper {
 
     int updateByShipping(Shipping record);
 
-    Shipping selectByShippingIdUserId(@Param("shippingId") Integer shippingId, @Param("userId") Integer userId);
+    Shipping selectByShippingIdUserId(@Param("userId") Integer userId, @Param("shippingId") Integer shippingId);
 
     List<Shipping> selectByUserId(Integer userId);
 }
